@@ -82,12 +82,28 @@ section h3 {
 
 .participants ul {
   margin-top: 6px;
-  padding-left: 20px;
+  padding-left: 0;
+  list-style: none;
   color: #555;
 }
 
 .participants li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 4px;
+}
+
+.unregister-button {
+  padding: 0 6px;
+  background-color: transparent;
+  color: #c62828;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.unregister-button:hover {
+  background-color: #ffebee;
 }
 
 .form-group {

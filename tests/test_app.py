@@ -39,3 +39,23 @@ def test_signup_for_activity_duplicate_fails():
 def test_signup_for_nonexistent_activity():
     response = client.post("/activities/Nonexistent Club/signup", params={"email": "student@mergington.edu"})
     assert response.status_code == 404
+
+
+def test_unregister_from_activity_success():
+    activity_name = "Chess Club"
+    email = "leavingstudent@mergington.edu"
+    activities[activity_name]["participants"].append(email)
+
+    response = client.delete(f"/activities/{activity_name}/signup", params={"email": email})
+
+    assert response.status_code == 200
+    assert email not in activities[activity_name]["participants"]
+
+
+def test_unregister_for_nonexistent_participant_fails():
+    response = client.delete(
+        "/activities/Chess Club/signup",
+        params={"email": "notregistered@mergington.edu"},
+    )
+
+    assert response.status_code == 404

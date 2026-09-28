@@ -31,9 +31,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
         const participants = details.participants
-          .map((participant) => `<li>${escapeHtml(participant)}</li>`)
+          .map((participant) => `
+            <li>
+              <span>${escapeHtml(participant)}</span>
+              <button
+                type="button"
+                class="unregister-button"
+                data-activity="${escapeHtml(encodeURIComponent(name))}"
+                data-email="${escapeHtml(encodeURIComponent(participant))}"
+                aria-label="Unregister ${escapeHtml(participant)}"
+              >&times;</button>
+            </li>`)
           .join("");
 
+
+  activitiesList.addEventListener("click", async (event) => {
+    const button = event.target.closest(".unregister-button");
+    if (!button) {
+      return;
+    }
+
+    const activity = decodeURIComponent(button.dataset.activity);
+    const email = decodeURIComponent(button.dataset.email);
+
+    try {
+      const response = await fetch(
+        `/activities/${encodeURIComponent(activity)}/signup?email=${encodeURIComponent(email)}`,
+        { method: "DELETE" }
+      );
+      const result = await response.json();
+
+      messageDiv.textContent = response.ok
+        ? result.message
+        : result.detail || "An error occurred";
+      messageDiv.className = response.ok ? "success" : "error";
+      messageDiv.classList.remove("hidden");
+
+      if (response.ok) {
+        await fetchActivities();
+      }
+    } catch (error) {
+      messageDiv.textContent = "Failed to unregister. Please try again.";
+      messageDiv.className = "error";
+      messageDiv.classList.remove("hidden");
+      console.error("Error unregistering participant:", error);
+    }
+  });
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
